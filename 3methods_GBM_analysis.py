@@ -1,7 +1,15 @@
-from typing import Callable, Sequence, Tuple, List
+
+
+####
+# This is code to price the option value of first example of 
+# LSM paper, with three different metod, BIn Tree, LSM, LSPI
+####
+
+from typing import Callable, Dict, Sequence, Tuple, List
 import numpy as np
 import random
 from scipy.stats import norm
+import matplotlib.pyplot as plt
 
 from rl.function_approx import DNNApprox, LinearFunctionApprox, \
     FunctionApprox, DNNSpec, AdamGradient, Weights
@@ -13,7 +21,8 @@ from rl.chapter8.optimal_exercise_bin_tree import OptimalExerciseBinTree
 from rl.markov_process import NonTerminal
 from rl.gen_utils.plot_funcs import plot_list_of_curves
 
-from pprint import pprint
+from rich import print, pretty
+pretty.install()
 
 TrainingDataType = Tuple[int, float, float]
 
@@ -76,7 +85,7 @@ def fitted_lspi_put_option(
 
     num_laguerre: int = 4
     epsilon: float = 1e-3
-    print(epsilon)
+    #print(epsilon)
 
     ident: np.ndarray = np.eye(num_laguerre)
     features: List[Callable[[Tuple[float, float]], float]] = [lambda _: 1.]
@@ -129,7 +138,7 @@ def fitted_lspi_put_option(
             a_inv -= np.outer(a_inv.dot(phi1), temp) / (1 + phi1.dot(temp))
             b_vec += phi1 * (1 - cont_cond[i]) * exer[i] * gamma
         wts = a_inv.dot(b_vec)
-        print(f"Iteration Number = {iteration_number:.3f}")
+        #print(f"Iteration Number = {iteration_number:.3f}")
 
     return LinearFunctionApprox.create(
         feature_functions=features,
@@ -233,21 +242,7 @@ def option_price(
     return np.average(prices)
 
 if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    #spot_price_val: float = 100.0
-    #strike_val: float = 100.0
-    #expiry_val: float = 1.0
-    #rate_val: float = 0.05
-    #vol_val: float = 0.25
-    #num_scoring_paths: int = 10000
-    #num_steps_scoring: int = 100
-
-    #num_steps_lspi: int = 10
-    #num_training_paths_lspi: int = 10000
-    #spot_price_frac_lspi: float = 0.3
-    #training_iters_lspi: int = 20
-
-
+    
     # Example of Longstaff og Schwartz
 
     spot_price_val: float = 36.0
@@ -283,29 +278,29 @@ if __name__ == '__main__':
     print("Fitted LSPI Model")
 
 
-    for step in [0, int(num_steps_lspi / 2), num_steps_lspi - 1]:
-        t = step * expiry_val / num_steps_lspi
-        prices = np.arange(120.0)
-        exer_curve = exercise_curve(
-            strike=strike_val,
-            t=t,
-            prices=prices
-        )
-        cont_curve_lspi = continuation_curve(
-            func=flspi,
-            t=t,
-            prices=prices
-        )
-        plt.plot(
-            prices,
-            exer_curve,
-            "b",
-            prices,
-            cont_curve_lspi,
-            "r",
-        )
-        plt.title(f"LSPI Curves for Time = {t:.3f}")
-        plt.show()
+    # for step in [0, int(num_steps_lspi / 2), num_steps_lspi - 1]:
+    #     t = step * expiry_val / num_steps_lspi
+    #     prices = np.arange(120.0)
+    #     exer_curve = exercise_curve(
+    #         strike=strike_val,
+    #         t=t,
+    #         prices=prices
+    #     )
+    #     cont_curve_lspi = continuation_curve(
+    #         func=flspi,
+    #         t=t,
+    #         prices=prices
+    #     )
+    #     plt.plot(
+    #         prices,
+    #         exer_curve,
+    #         "b",
+    #         prices,
+    #         cont_curve_lspi,
+    #         "r",
+    #    )
+    #   plt.title(f"LSPI Curves for Time = {t:.3f}")
+    #    plt.show()
 
     european_price: float = european_put_price(
         spot_price=spot_price_val,
@@ -342,6 +337,22 @@ if __name__ == '__main__':
     #     num_steps=num_steps_dql,
     #     strike=strike_val
     # )
+    print("Plotting boundary curve in Bin Tree method, Ex1 LSM paper")
+
+    plot_list_of_curves(
+        list_of_x_vals=[bin_tree_x],
+        list_of_y_vals=[bin_tree_y],
+        list_of_colors=["g"],
+        list_of_curve_labels=["Binary Tree"],
+        x_label="Time",
+        y_label="Underlying Price",
+        title="Binary Tree Exercise Boundaries"
+    )
+
+
+    print("Boundary curve in Bin Tree method and LSPI, Ex1 LSM paper")
+
+
     plot_list_of_curves(
         list_of_x_vals=[lspi_x, bin_tree_x],
         list_of_y_vals=[lspi_y, bin_tree_y],
@@ -361,8 +372,8 @@ if __name__ == '__main__':
         vol=vol_val
     )
 
-    print(f"European Put Price = {european_price:.3f}")
-    print(f"Binary Tree Price = {bin_tree_price:.3f}")
+    #print(f"European Put Price = {european_price:.3f}")
+    #print(f"Binary Tree Price = {bin_tree_price:.3f}")
 
     lspi_opt_price: float = option_price(
         scoring_data=scoring_data,
@@ -371,133 +382,55 @@ if __name__ == '__main__':
         rate=rate_val,
         strike=strike_val,
     )
-    print(f"LSPI Option Price = {lspi_opt_price:.3f}")
+    #print(f"LSPI Option Price = {lspi_opt_price:.3f}")
 
 
-
-
-plot_list_of_curves(
-        list_of_x_vals=[bin_tree_x],
-        list_of_y_vals=[bin_tree_y],
-        list_of_colors=["g"],
-        list_of_curve_labels=["Binary Tree"],
-        x_label="Time",
-        y_label="Underlying Price",
-        title="Binary Tree Exercise Boundaries"
-    )
-
-
-from audioop import reverse
-from dataclasses import dataclass, replace
-from re import I
-from typing import Callable, Dict, Sequence, Tuple, List
-import numpy as np
-from pandas import test
-from scipy.stats import norm
+##################################################
 
 from random import randrange
 from numpy.polynomial.laguerre import lagval
 from basis_fun import laguerre_polynomials, laguerre_polynomials_ind
+from LSM_policy import OptimalExerciseLSM
 from price_model import SimulateGBM
 
-from rich import print, pretty
-pretty.install()
-
-import matplotlib.pyplot as plt
-
-from lsmfresh import lsm_policy
-from lsmfresh import option_price_lsm
-
+###################################################
 S0_value = 36
 r_value = 0.06
 sd_value = 0.2
 T_value = 1
-paths_value = 100000
+paths_value = 10000
 steps_value = 50
 
 K_value = 40
 k_value = 4
 
+
+def payoff_func(_: float, s: float) -> float:
+            return max(K_value - s, 0.)
+
+LSMclass = OptimalExerciseLSM(spot_price=S0_value, payoff=payoff_func,
+                                expiry=T_value, rate=r_value, 
+                                vol=sd_value,num_steps=steps_value)
+
+
+                                       
 Stock_Matrix_GBM = SimulateGBM(S0=S0_value, r=r_value, sd=sd_value, T=T_value, 
 paths=paths_value,steps=steps_value, reduce_variance=True)
 
 
-Beta_list1 = lsm_policy(S0=S0_value, 
-                                         K=K_value, r=r_value, paths=paths_value,
-                                         sd=sd_value, T=T_value, steps=steps_value, 
-                                         Stock_Matrix=Stock_Matrix_GBM,
-                                         k=k_value,
-                                         reduce_variance=True)
+Beta_list1 = LSMclass.train_LSM(training_data=Stock_Matrix_GBM,
+                            num_paths_train=paths_value, K = K_value,
+                            k = k_value)
 
-strike = 40
-def payoff_func(_: float, s: float) -> float:
-         return max(strike - s, 0.)
+print("Fitted LSM Model")
 
+GBM_scoring = LSMclass.scoring_sim_data(num_paths_test=10000)
 
-Stock_Matrix_GBM_test = SimulateGBM(S0=S0_value, r=r_value, sd=sd_value, T=T_value, 
-paths=10000,steps=steps_value, reduce_variance=True)
+lsm_opt_price = LSMclass.option_price(scoring_data=GBM_scoring, 
+                                Beta_list=Beta_list1, k=4)
 
-price_lsm = option_price_lsm(scoring_data=Stock_Matrix_GBM_test, num_steps=steps_value-1,
-payoff=payoff_func, rate=r_value, expiry=T_value, Beta_list=Beta_list1, k=k_value)
 
 print(f"European Put Price = {european_price:.3f}")
 print(f"Binary Tree Price = {bin_tree_price:.3f}")
-print(f"LSM Price = {price_lsm:.3f}")
-
-num_steps = 48
-expiry = 1
-
-
-strike = 40
-prices: np.ndarray = np.arange(0., strike + 0.1, 0.1)
-prices
-num_steps = 48
-expiry = 1
-
-x = []
-y = []
-
-for step in range(2,num_steps,1):
-    
-    print(step)
-    cp = np.array([np.dot(laguerre_polynomials_ind(p,k=4), 
-                Beta_list1[step]) for p in prices])
-
-    ep = np.array([max(strike - p, 0) for p in prices])
-
-
-    ll: Sequence[float] = [p for p, c, e in zip(prices, cp, ep)
-                               if e > c]
-    #print(ll)
-    if len(ll) > 0:
-        x.append(step * expiry / num_steps)
-        y.append(max(ll))
-
-final: Sequence[Tuple[float, float]] = \
-        [(p, max(strike - p, 0)) for p in prices]
-x.append(expiry)
-y.append(max(p for p, e in final if e > 0))
-
-
-
-plot_list_of_curves(
-        list_of_x_vals=[bin_tree_x,x],
-        list_of_y_vals=[bin_tree_y, y],
-        list_of_colors=["g", "r"],
-        list_of_curve_labels=["Binary Tree","LSM"],
-        x_label="Time",
-        y_label="Underlying Price",
-        title="Binary Tree, Least Square Monte Carlo Exercise Boundaries"
-    )
-
-
-
-plot_list_of_curves(
-        list_of_x_vals=[lspi_x, bin_tree_x,x],
-        list_of_y_vals=[lspi_y, bin_tree_y, y],
-        list_of_colors=["b", "g", "r"],
-        list_of_curve_labels=["LSPI", "Binary Tree","LSM"],
-        x_label="Time",
-        y_label="Underlying Price",
-        title="LSPI, Binary Tree, Least Square Monte Carlo Exercise Boundaries"
-    )
+print(f"LSM Price = {lsm_opt_price:.3f}")
+print(f"LSPI Price = {lspi_opt_price:.3f}")
