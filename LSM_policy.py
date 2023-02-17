@@ -34,12 +34,13 @@ class OptimalExerciseLSM:
         return strike * np.exp(-self.rate * self.expiry) * norm.cdf(-d2) \
             - self.spot_price * norm.cdf(-d1)
 
-    def GBMprice_training(self, num_paths_train) -> np.ndarray:
+    def GBMprice_training(self, num_paths_train, seed_random = True) -> np.ndarray:
         
         return SimulateGBM(
             S0=self.spot_price,
             r=self.rate, sd=self.vol, T=self.expiry, 
-            paths=num_paths_train, steps=self.num_steps)
+            paths=num_paths_train, steps=self.num_steps, 
+            seed_random = seed_random)
 
     
     def train_LSM(self, training_data: np.ndarray ,num_paths_train: int, K:float, k:int):
