@@ -14,7 +14,12 @@ pretty.install()
 # GMB Model
 # log(x_T) ~ N(log(x_S)+(mu-sigma^2/2)(T-S),sigma^2(T-S))
 
-def SimulateGBM(S0, r, sd, T, paths, steps, reduce_variance = True):
+def SimulateGBM(S0, r, sd, T, paths, steps, reduce_variance = True, 
+          seed_random = True):
+    
+    if seed_random:
+      np.random.seed(1)
+
     steps = int(steps)
     dt = T/steps
     Z = np.random.normal(0, 1, paths//2 * steps).reshape((paths//2, steps))
