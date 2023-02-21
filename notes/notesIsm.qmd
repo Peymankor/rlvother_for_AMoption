@@ -45,7 +45,7 @@ $$F(\omega; t_{K-1})=\sum_{j=0}^{5}a_jL_j(X)$$
 
 
 In this work we focus only in-the-money paths in the estimation since the exercise decision is only relevant when the option is in the money.
-dada
+
 ### Backward -recursive determination of early exercise states
 
 
