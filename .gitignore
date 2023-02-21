@@ -1,6 +1,7 @@
 
 # Our PDFs are all generated
 *.pdf
+*.html
 
 # Emacs files
 *~
