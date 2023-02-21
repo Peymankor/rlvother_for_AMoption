@@ -21,6 +21,10 @@ from rl.chapter8.optimal_exercise_bin_tree import OptimalExerciseBinTree
 from rl.markov_process import NonTerminal
 from rl.gen_utils.plot_funcs import plot_list_of_curves
 
+
+from LSM_policy import OptimalExerciseLSM
+from basis_fun import laguerre_polynomials_ind
+
 from rich import print, pretty
 pretty.install()
 
@@ -70,6 +74,7 @@ def training_sim_data(
             ret.append((step, price, next_price))
             price = next_price
     return ret
+
 
 def fitted_lspi_put_option(
     expiry: float,
@@ -166,6 +171,37 @@ def scoring_sim_data(
     return paths
 
 
+def continuation_curve_lsm(left_price, right_price,deltaprice,      
+                            lsm_policy_coef):
+
+    prices = np.arange(left_price,right_price,deltaprice)
+    
+    x = []
+    y = []
+
+    for time_step in reversed(lsm_policy_coef.keys()):
+    
+        cp = np.array([np.dot(laguerre_polynomials_ind(p,k=4), 
+        lsm_policy_coef[time_step]) for p in prices])
+
+        ep = np.array([max(K_value - p, 0) for p in prices])
+
+        ll: Sequence[float] = [p for p, c, e in zip(prices, cp, ep) if e > c]
+   
+        if len(ll) > 0:
+            x.append((time_step+1) * expiry_val / num_steps_value_lsm)
+            y.append(max(ll))
+
+    final: Sequence[Tuple[float, float]] = \
+        [(p, max(K_value - p, 0)) for p in prices]
+    
+    x.append(expiry_val)
+    y.append(max(p for p, e in final if e > 0))
+
+    return x, y
+
+
+
 def continuation_curve(
     func: FunctionApprox[Tuple[float, float]],
     t: float,
@@ -250,7 +286,7 @@ if __name__ == '__main__':
     expiry_val: float = 1.0
     rate_val: float = 0.06
     vol_val: float = 0.2
-    num_scoring_paths: int = 100
+    num_scoring_paths: int = 1000
     num_steps_scoring: int = 50
 
     num_steps_lspi: int = 10
@@ -258,7 +294,11 @@ if __name__ == '__main__':
     spot_price_frac_lspi: float = 0.1
     training_iters_lspi: int = 8
 
-
+    num_steps_value_lsm = 50 
+    num_paths_train_lsm = 100000
+    K_value = 40
+    k_value = 4
+    num_paths_test_value_lsm = 1000
 
     #random.seed(100)
     #np.random.seed(100)
@@ -276,7 +316,7 @@ if __name__ == '__main__':
     )
 
     print("Fitted LSPI Model")
-
+    
 
     # for step in [0, int(num_steps_lspi / 2), num_steps_lspi - 1]:
     #     t = step * expiry_val / num_steps_lspi
@@ -331,6 +371,42 @@ if __name__ == '__main__':
         num_steps=num_steps_lspi,
         strike=strike_val
     )
+
+    # LSM method
+
+
+    def payoff_func(_: float, s: float) -> float:
+            return max(K_value - s, 0.)
+
+
+    lsmclass = OptimalExerciseLSM(spot_price=spot_price_val,
+                 payoff=payoff_func, expiry=expiry_val,
+                 rate=rate_val, vol=vol_val,
+                 num_steps=num_steps_value_lsm)
+
+    train_data_v = lsmclass.GBMprice_training(
+    num_paths_train=num_paths_train_lsm, seed_random=False)
+
+    lsm_policy_coef_beta = lsmclass.train_LSM(training_data=train_data_v,
+                            num_paths_train=num_paths_train_lsm, 
+                            K=K_value, k=k_value)
+    
+    print("Fitted LSM Model")
+
+ 
+    test_data_v = lsmclass.scoring_sim_data(num_paths_test=
+                    num_paths_test_value_lsm)
+
+    lsm_opt_price = lsmclass.option_price(scoring_data=test_data_v, 
+                        Beta_list=lsm_policy_coef_beta,
+                            k=k_value)
+
+    lsm_bound_x, lsm_bound_y = continuation_curve_lsm(
+                    left_price=20,right_price=40, 
+                    deltaprice=0.1, 
+                    lsm_policy_coef=lsm_policy_coef_beta
+    )
+
     # dql_x, dql_y = put_option_exercise_boundary(
     #     func=fdql,
     #     expiry=expiry_val,
@@ -363,6 +439,20 @@ if __name__ == '__main__':
         title="LSPI, Binary Tree Exercise Boundaries"
     )
 
+
+    print("Boundary curve in Bin Tree method and LSPI, LSM Ex1 LSM paper")
+
+    plot_list_of_curves(
+        list_of_x_vals=[lspi_x, bin_tree_x, lsm_bound_x],
+        list_of_y_vals=[lspi_y, bin_tree_y, lsm_bound_y],
+        list_of_colors=["b", "g", "r"],
+        list_of_curve_labels=["LSPI", "Binary Tree", "LSM"],
+        x_label="Time",
+        y_label="Underlying Price",
+        title="LSPI, Binary Tree and LSM Exercise Boundaries"
+    )
+
+
     scoring_data: np.ndarray = scoring_sim_data(
         expiry=expiry_val,
         num_steps=num_steps_scoring,
@@ -371,6 +461,7 @@ if __name__ == '__main__':
         rate=rate_val,
         vol=vol_val
     )
+
 
     #print(f"European Put Price = {european_price:.3f}")
     #print(f"Binary Tree Price = {bin_tree_price:.3f}")
@@ -383,54 +474,58 @@ if __name__ == '__main__':
         strike=strike_val,
     )
     #print(f"LSPI Option Price = {lspi_opt_price:.3f}")
-
+    
+    print(f"European Put Price = {european_price:.3f}")
+    print(f"Binary Tree Price = {bin_tree_price:.3f}")
+    print(f"LSM Price = {lsm_opt_price:.3f}")
+    print(f"LSPI Price = {lspi_opt_price:.3f}")
 
 ##################################################
 
-from random import randrange
-from numpy.polynomial.laguerre import lagval
-from basis_fun import laguerre_polynomials, laguerre_polynomials_ind
-from LSM_policy import OptimalExerciseLSM
-from price_model import SimulateGBM
+# from random import randrange
+# from numpy.polynomial.laguerre import lagval
+# from basis_fun import laguerre_polynomials, laguerre_polynomials_ind
+# from LSM_policy import OptimalExerciseLSM
+# from price_model import SimulateGBM
 
-###################################################
-S0_value = 36
-r_value = 0.06
-sd_value = 0.2
-T_value = 1
-paths_value = 10000
-steps_value = 50
+# ##################################################
+# S0_value = 36
+# r_value = 0.06
+# sd_value = 0.2
+# T_value = 1
+# paths_value = 10000
+# steps_value = 50
 
-K_value = 40
-k_value = 4
+# K_value = 40
+# k_value = 4
 
 
-def payoff_func(_: float, s: float) -> float:
-            return max(K_value - s, 0.)
+# def payoff_func(_: float, s: float) -> float:
+#             return max(K_value - s, 0.)
 
-LSMclass = OptimalExerciseLSM(spot_price=S0_value, payoff=payoff_func,
-                                expiry=T_value, rate=r_value, 
-                                vol=sd_value,num_steps=steps_value)
+# LSMclass = OptimalExerciseLSM(spot_price=S0_value, payoff=payoff_func,
+#                                 expiry=T_value, rate=r_value, 
+#                                 vol=sd_value,num_steps=steps_value)
 
 
                                        
-Stock_Matrix_GBM = SimulateGBM(S0=S0_value, r=r_value, sd=sd_value, T=T_value, 
-paths=paths_value,steps=steps_value, reduce_variance=True)
+# Stock_Matrix_GBM = SimulateGBM(S0=S0_value, r=r_value, sd=sd_value, T=T_value, 
+# paths=paths_value,steps=steps_value, reduce_variance=True)
 
 
-Beta_list1 = LSMclass.train_LSM(training_data=Stock_Matrix_GBM,
-                            num_paths_train=paths_value, K = K_value,
-                            k = k_value)
+# Beta_list1 = LSMclass.train_LSM(training_data=Stock_Matrix_GBM,
+#                             num_paths_train=paths_value, K = K_value,
+#                             k = k_value)
 
-print("Fitted LSM Model")
+#print("Fitted LSM Model")
 
-GBM_scoring = LSMclass.scoring_sim_data(num_paths_test=10000)
+#GBM_scoring = LSMclass.scoring_sim_data(num_paths_test=10000)
 
-lsm_opt_price = LSMclass.option_price(scoring_data=GBM_scoring, 
-                                Beta_list=Beta_list1, k=4)
+#lsm_opt_price = LSMclass.option_price(scoring_data=GBM_scoring, 
+#                                Beta_list=Beta_list1, k=4)
 
 
-print(f"European Put Price = {european_price:.3f}")
-print(f"Binary Tree Price = {bin_tree_price:.3f}")
-print(f"LSM Price = {lsm_opt_price:.3f}")
-print(f"LSPI Price = {lspi_opt_price:.3f}")
+#print(f"European Put Price = {european_price:.3f}")
+#print(f"Binary Tree Price = {bin_tree_price:.3f}")
+#print(f"LSM Price = {lsm_opt_price:.3f}")
+#print(f"LSPI Price = {lspi_opt_price:.3f}")
