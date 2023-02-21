@@ -4,6 +4,10 @@ from basis_fun import laguerre_polynomials_ind
 from typing import Callable, Dict, Sequence, Tuple
 import matplotlib.pyplot as plt
 import scienceplots
+
+from rich import print, pretty
+pretty.install()
+
 plt.style.use('science')
 
 spot_price_value = 36
@@ -11,7 +15,7 @@ expiry_value = 1
 rate_value = 0.06
 vol_value = 0.2
 num_steps_value = 50 
-num_paths_train_value = 100
+num_paths_train_value = 10000
 K_value = 40
 k_value = 4
 num_paths_test_value = 1000
@@ -27,13 +31,11 @@ lsmclass = OptimalExerciseLSM(spot_price=spot_price_value,
                                 num_steps=num_steps_value)
 
 train_data_v = lsmclass.GBMprice_training(
-    num_paths_train=num_paths_train_value, seed_random=True)
+    num_paths_train=num_paths_train_value, seed_random=False)
 
 lsm_policy_coef = lsmclass.train_LSM(training_data=train_data_v,
                             num_paths_train=num_paths_train_value, K=K_value,
                             k=k_value)
-
-#lsm_policy_coef
 
 test_data_v = lsmclass.scoring_sim_data(num_paths_test=
                     num_paths_test_value)
@@ -44,7 +46,7 @@ Option_price = lsmclass.option_price(scoring_data=test_data_v,
 
 print(f"LSM Put Price = {Option_price:.3f}")
 
-prices = np.arange(20,40,1)
+prices = np.arange(20,40,0.1)
 x=[]
 y = []
 
