@@ -70,7 +70,8 @@ Using 7 feature functions, the first 4 Laguerre polyomials that are function of 
 - $\phi(S_t) = 1$
 - $\phi(S_t) = e^{-\frac{M_t}{2}}$
 - $\phi(S_t) = e^{-\frac{M_t}{2}}.(1-M_t)$
-- $\phi(S_t) = e^{-\frac{M_t}{2}}.(1-2M_t+M_t^2/2)$$
+- $\phi(S_t) = e^{-\frac{M_t}{2}}.(1-2M_t+M_t^2/2)$
 - $\phi(S_t) = sin(\frac{\pi(T-t)}{2T})$
 - $\phi(S_t) = log(T-t)$
 - $\phi(S_t) = (\frac{t}{T})^2$
+
