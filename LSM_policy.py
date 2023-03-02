@@ -104,7 +104,8 @@ class OptimalExerciseLSM:
         num_steps = self.num_steps-1   
         num_paths: int = scoring_data.shape[0]
         prices: np.ndarray = np.zeros(num_paths)
-        dt: float = self.expiry / num_steps
+        stoptime: np.ndarray = np.zeros(num_paths)
+        dt: float = self.expiry / self.num_steps
 
         #Beta_list.reverse()
 
@@ -125,11 +126,12 @@ class OptimalExerciseLSM:
                     if exercise_price >= continue_price:
                         prices[i] = np.exp(-self.rate * t) * exercise_price
                         step = num_steps + 1
+                        stoptime[i] = t
                 else:
                     step += 1
 
 
-        return np.average(prices)
+        return np.average(prices), stoptime
 
 
 ################################ TEST Code ###################################
@@ -162,7 +164,7 @@ if __name__ == "__main__":
 
     test_data_v = Testclass.scoring_sim_data(num_paths_test=10000)
 
-    Option_price = Testclass.option_price(scoring_data=test_data_v,Beta_list=lsm_policy_v,
+    Option_price,_ = Testclass.option_price(scoring_data=test_data_v,Beta_list=lsm_policy_v,
                                             k=k_value)
     print("Test Code: \nOption Price:")
     print(Option_price)
@@ -200,7 +202,7 @@ if __name__ == "__main__":
 
                     test_data_v = LSMclass.scoring_sim_data(num_paths_test=paths_number_test)
 
-                    Option_price = LSMclass.option_price(scoring_data=test_data_v, 
+                    Option_price, _ = LSMclass.option_price(scoring_data=test_data_v, 
                         Beta_list=lsm_policy_v,k=k_value)
       
                     print("%d %10.2f %10d %20.3f %20.3f %20.3f" 
