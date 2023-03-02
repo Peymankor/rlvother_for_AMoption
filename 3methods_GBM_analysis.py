@@ -298,7 +298,7 @@ if __name__ == '__main__':
     num_paths_train_lsm = 100000
     K_value = 40
     k_value = 4
-    num_paths_test_value_lsm = 1000
+    num_paths_test_value_lsm = 10000
 
     #random.seed(100)
     #np.random.seed(100)
@@ -316,31 +316,6 @@ if __name__ == '__main__':
     )
 
     print("Fitted LSPI Model")
-    
-
-    # for step in [0, int(num_steps_lspi / 2), num_steps_lspi - 1]:
-    #     t = step * expiry_val / num_steps_lspi
-    #     prices = np.arange(120.0)
-    #     exer_curve = exercise_curve(
-    #         strike=strike_val,
-    #         t=t,
-    #         prices=prices
-    #     )
-    #     cont_curve_lspi = continuation_curve(
-    #         func=flspi,
-    #         t=t,
-    #         prices=prices
-    #     )
-    #     plt.plot(
-    #         prices,
-    #         exer_curve,
-    #         "b",
-    #         prices,
-    #         cont_curve_lspi,
-    #         "r",
-    #    )
-    #   plt.title(f"LSPI Curves for Time = {t:.3f}")
-    #    plt.show()
 
     european_price: float = european_put_price(
         spot_price=spot_price_val,
@@ -392,14 +367,46 @@ if __name__ == '__main__':
                             K=K_value, k=k_value)
     
     print("Fitted LSM Model")
-
  
     test_data_v = lsmclass.scoring_sim_data(num_paths_test=
                     num_paths_test_value_lsm)
 
-    lsm_opt_price = lsmclass.option_price(scoring_data=test_data_v, 
+    
+    lsm_opt_price, _ = lsmclass.option_price(scoring_data=test_data_v, 
                         Beta_list=lsm_policy_coef_beta,
                             k=k_value)
+    
+
+    num_paths_test_value_lsm_stoptime = 10
+
+    test_data_v_stoptime = lsmclass.scoring_sim_data(num_paths_test=
+                        num_paths_test_value_lsm_stoptime)
+
+    _, lsm_stoptimes = lsmclass.option_price(scoring_data=test_data_v_stoptime, 
+                        Beta_list=lsm_policy_coef_beta,
+                            k=k_value)
+    
+    
+    dt = expiry_val/num_steps_value_lsm
+    taxis = np.arange(dt,1+dt,dt)
+    
+
+    fig, ax = plt.subplots(figsize=(11, 7))
+    for price_path in np.arange(len(test_data_v_stoptime)):
+        
+        price_list = test_data_v_stoptime[price_path]
+        
+        color = next(ax._get_lines.prop_cycler)['color']
+        ax.plot(taxis, price_list, color = color)        
+        
+        stopindex = (lsm_stoptimes[price_path]*num_steps_value_lsm -1)
+        ax.plot(lsm_stoptimes[price_path], price_list[int(stopindex)], marker = "*", color=color, markersize=10)
+
+    ax.set_xlabel ("Time (Normalized)", fontsize=20)
+    ax.set_ylabel("Underlying Price", fontsize=20)
+    ax.grid(True)
+    ax.set_title("Stopping Time at Test Paths", fontsize=25)
+    plt.show()
 
     lsm_bound_x, lsm_bound_y = continuation_curve_lsm(
                     left_price=20,right_price=40, 
@@ -407,12 +414,6 @@ if __name__ == '__main__':
                     lsm_policy_coef=lsm_policy_coef_beta
     )
 
-    # dql_x, dql_y = put_option_exercise_boundary(
-    #     func=fdql,
-    #     expiry=expiry_val,
-    #     num_steps=num_steps_dql,
-    #     strike=strike_val
-    # )
     print("Plotting boundary curve in Bin Tree method, Ex1 LSM paper")
 
     plot_list_of_curves(
