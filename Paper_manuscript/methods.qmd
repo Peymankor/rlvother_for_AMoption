@@ -1,16 +1,33 @@
 # Methods
 
 
-## Binomial Lattice Method
+## Binomial Options Pricing Model 
 
+- The orginal Bin was developed to price option on underlying whose price evolves according 
+  to a **lognormal stochastic process, where stochartic process is in form of discrete-time, finite-horizon, finite states.
 
+- $$dS_t = r.S_t.dt + \sigma.S_t.dz_t$$
 
+$\sigma$ is the lognormal dispersion (volatility), $r$ lognormal drift
 
+- What is Bin : serves as a discrete-time, finite-horizon, finite-states approximation to the 
+  continous proocess.
 
+![Binomial Option Pricing Model (Binomial Tree)](figures_imprted/bin_fig.png){#fig-binomial}
+
+- We denote $S_{i,j}$ as the price after $i$ time steps in state $j$ (for any $i$ \in Z>0 and for any $0<j<i$), 
+- We need to calibrate $S_{i+1,j+1}=S_{i,j}.u$ and $S_{i+1,j}=S_{i,j}.d$
+- Variance Calibration
+  $$log^²(u) = \frac{\sigma^2T}{n} \Rightarrow u = e^{\sigma \sqrt{\frac{T}{n}} }$$
+- Mean Calibration
+- $$qu + \frac{1-q}{u} = e^{\frac{rT}{n}} \Rightarrow q = \frac{u.e^{\frac{rT}{n}-}-1}{u^2-1}=\frac{e^{\frac{rT}{n}+\sigma\sqrt{\frac{T}{n}}}-1}{e^{2\sigma\sqrt{{\frac{T}{n}}}}-1}$$
 ## Least Square Monte-Carlo
 
+- The calibration for $u$ and $q$ ensures that as $n \rightarrow \infty$ (i.e., time step interval $\frac{T}{n} \rightarrow 0$), the mean and variance of binomial distributaion after i time steps matches the mean $(r-\frac{\sigma^2}{2})\frac{iT}{n}$ and variance $\frac{\sigma^2iT}{n}$ 
 
+### Procedure
 
+As mentioned earlier, we want to model the problem of Optimal Exercise of American Options as a discrete-time, finite-horizon, finite-states MDP. We set the terminal time to be $t = T + 1$, meaning all the states at time $T + 1$ are terminal states. Here we will utilize the states and state transitions (probabilistic price movements of the underlying) given by the Binomial Options Pricing Model as the states and state transitions in the MDP. The MDP actions in each state will be binary—either exercise the option (and immediately move to a terminal state) or don’t exercise the option (i.e., continue on to the next time step’s random state, as given by the Binomial Options Pricing Model). If the exercise action is chosen, the MDP reward is the option payoff. If the continue action is chosen, the reward is $0$. The discount factor $\lambda$ is $e^{-\frac{rT}{n}}$ since (as we’ve learnt in the single-period case), the price (which translates here to the Optimal Value Function) is defined as the riskless ratediscounted expectation (under the risk-neutral probability measure) of the option payoff. In the multi-period setting, the overall discounting amounts to composition (multiplication) of each time step’s discounting (which is equal to $\lambda$) and the overall risk-neutral probability measure amounts to the composition of each time step’s risk-neutral probability measure (which is specified by the calibrated value $q$).
 
 
 ## Reinforcement Learning
