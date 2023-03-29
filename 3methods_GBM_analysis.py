@@ -260,6 +260,8 @@ def option_price(
 ) -> float:
     num_paths: int = scoring_data.shape[0]
     num_steps: int = scoring_data.shape[1] - 1
+    stoptime_rl: np.ndarray = np.zeros(num_paths)
+
     prices: np.ndarray = np.zeros(num_paths)
     dt: float = expiry / num_steps
 
@@ -271,11 +273,12 @@ def option_price(
             continue_price: float = func.evaluate([(t, path[step])])[0] \
                 if step < num_steps else 0.
             step += 1
-            if exercise_price >= continue_price:
+            if (exercise_price >= continue_price) and (exercise_price>0):
                 prices[i] = np.exp(-rate * t) * exercise_price
+                stoptime_rl[i] = t 
                 step = num_steps + 1
 
-    return np.average(prices)
+    return np.average(prices), stoptime_rl
 
 if __name__ == '__main__':
     
@@ -286,7 +289,7 @@ if __name__ == '__main__':
     expiry_val: float = 1.0
     rate_val: float = 0.06
     vol_val: float = 0.2
-    num_scoring_paths: int = 1000
+    num_scoring_paths: int = 10000
     num_steps_scoring: int = 50
 
     num_steps_lspi: int = 10
@@ -463,17 +466,50 @@ if __name__ == '__main__':
         vol=vol_val
     )
 
+    scoring_data_stoptime = np.c_[np.ones(num_paths_test_value_lsm_stoptime)*spot_price_val,test_data_v_stoptime]
+    
+    _, rl_stoptimes = option_price(
+        scoring_data=scoring_data_stoptime,
+        func=flspi,
+        expiry=expiry_val,
+        rate=rate_val,
+        strike=strike_val,
+    )
 
-    #print(f"European Put Price = {european_price:.3f}")
-    #print(f"Binary Tree Price = {bin_tree_price:.3f}")
 
-    lspi_opt_price: float = option_price(
+    fig, ax = plt.subplots(figsize=(11, 7))
+    for price_path in np.arange(len(test_data_v_stoptime)):
+        
+        price_list = test_data_v_stoptime[price_path]
+        
+        color = next(ax._get_lines.prop_cycler)['color']
+        ax.plot(taxis, price_list, color = color)        
+        
+
+        stopindex = (lsm_stoptimes[price_path]*num_steps_value_lsm -1)
+        ax.plot(lsm_stoptimes[price_path], price_list[int(stopindex)], marker = "x", color=color, 
+                markersize=15)
+
+        stopindex = (rl_stoptimes[price_path]*num_steps_value_lsm -1)
+        ax.plot(rl_stoptimes[price_path], price_list[int(stopindex)], marker = "o",     
+                color=color, markersize=15, fillstyle= "none", label="Test11")
+
+    ax.set_xlabel ("Time (Normalized)", fontsize=20)
+    ax.set_ylabel("Underlying Price", fontsize=20)
+    ax.grid(True)
+    ax.set_title("Stopping Time at Test Paths, Cross (LSM), Circle (RL)", fontsize=25)
+    plt.show()
+
+    #plt.show()
+    lspi_opt_price,_ = option_price(
         scoring_data=scoring_data,
         func=flspi,
         expiry=expiry_val,
         rate=rate_val,
         strike=strike_val,
     )
+
+
     #print(f"LSPI Option Price = {lspi_opt_price:.3f}")
     
     print(f"European Put Price = {european_price:.3f}")
