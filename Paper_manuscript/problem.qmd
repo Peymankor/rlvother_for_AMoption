@@ -1,5 +1,18 @@
 # Problem Describtion
 
+-In this section, we cover applications of Sequential Decsion Making for pricing derivative. The policy is to identify the optimal time/state to exercise an American Option (a type of financial derivative) in an idealized market setting akin to the “frictionless” market settin. Optimal exercise of an American Option is the key to determining its fair price.
+
+The most basic forms of American Options are American Call and Put Options. American Call and Put Options are essentially extensions of the corresponding European Call and Put Options by allowing the buyer (owner) of the American Option to exercise the option to buy (in the case of Call) or sell (in the case of Put) at any time $t ≤ T$ . The allowance of exercise at any time at or before the expiry time $T$ can often be a tricky financial decision for the option owner. At each point in time when the American Option is in-the-money (i.e., positive payoff upon exercise), the option owner might be tempted to exercise and collect the payoff but might as well be thinking that if she waits, the option might become more in-the-money (i.e., prospect of a bigger payoff if she waits for a while). Hence, it’s clear that an American Option is always of the “Option-Type” since the timing of the decision (option) to exercise is very important in the case of an American Option. 
+
+This also means that the problem of pricing an American Option (the fair price the buyer would need to pay to own an American Option) is much harder than the problem of pricing an European Option.
 This is a book created from markdown and executable code.
+
+We can define Optimal Stopping problem of American Option Problem in Markov Decision Process (MDP):
+
+- The MDP **State** at time $t$ is $X_t$
+- The MDP **Action** is Boolean: Stop the Process or Continue the Process.
+- The MDP **Reward** is always 0, except upon Stopping, when it is equal to payoff
+- The MDP **Discount Factor** $\lambda$ is equal to 1.
+- The MDP probabilistic -transitions are governed by the Stochastic Process $X$ 
 
 See @knuth84 for additional discussion of literate programming.
