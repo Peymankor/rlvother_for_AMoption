@@ -32,7 +32,7 @@
     "href": "prices.html",
     "title": "4  Price Models",
     "section": "",
-    "text": "See Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97."
+    "text": "Consider a stochastic process \\(x\\) described in the form of the following Ito process:\n\\[dx_t = \\mu(t).x_t.d_t + \\sigma(t).x_t.dz_t\\]\nThe special case of \\(\\mu(t)=\\mu (constant)\\) and \\(\\sigma(t) = \\sigma(constant)\\) known as Geomstric Brownian Motion, to reflect the fact that the stochastic increment of the process \\((\\sigma.x_t.dz_t)\\) is multiplicative to the level of the process \\(x_t\\). If we cosnider this special case, we get:\n\\[y_T = log(x_T) \\sim \\mathcal{N}(log(x_S) + (\\mu-\\frac{\\sigma^2}{2})(T-S), \\sigma^2(T-S))\\]\n\\[E[x_T|x_S]=x_S.e^{\\mu(T-S)}\\]\n\\[Variance[x_T|x_S]=x_S^2.e^{2\\mu(T-S)}.(e^{\\sigma^2(T-S)}-1)\\]"
   },
   {
     "objectID": "results.html",
@@ -82,5 +82,12 @@
     "title": "2  Methods",
     "section": "2.3 kLSM Method",
     "text": "2.3 kLSM Method\n\n2.3.1 The Pricing is based on set of sampling traces of the underlying prices.\n\n\n2.3.2 Function approximation of the continuation value for in-the-money states.\nThe LSM approach uses least squares to approximate the conditional expectaion function at \\(t_{K-1}, t_{K-2}, \\cdots, t_1\\):\n\nUnknown functional form:\n\n\\[F(\\omega; t_{K-1})\\]\n\nThe unknown functional form can be represented as:\n\n\\[F(\\omega; t_{K-1})=\\sum_{j=0}^{\\infty}a_jL_j(X)\\]\nIn this work choice of basis function is set of Lageurre polynomials:\n\\[L_1(X)=1\\]\n\\[L_2(X)= 1-X\\]\n\\[L_3(X) = 1 - 2X + X^2/2\\]\n\\[L_4(X) = 1 - 3X + 3X^2/2 - X^3/6\\]\n\\[L_5(X) = 1 - 4X + 3X^2 - 2X^3/3 + X^4/24\\]\n\nIn the python code unknown function can be represented as:\n\n\\[F(\\omega; t_{K-1})=\\sum_{j=0}^{5}a_jL_j(X)\\]\nIn this work we focus only in-the-money paths in the estimation since the exercise decision is only relevant when the option is in the money.\n\n\n2.3.3 Backward -recursive determination of early exercise states"
+  },
+  {
+    "objectID": "prices.html#the-garch-model",
+    "href": "prices.html#the-garch-model",
+    "title": "4  Price Models",
+    "section": "4.2 The GARCH model",
+    "text": "4.2 The GARCH model\nGeneralized Autoregressive Conditional Heteroskedasticity (GARCH) process is defined as\n\\[r_t = \\mu_t + \\epsilon_t\\]\nwhere \\(r_t\\) is…, where \\(\\mu_t\\) can be any adapted model for the conditional mean. \\(\\epsilon_t\\) can be defined as :\n\\[\\sigma_t^2 = \\omega + \\sum_{p=1}^{P}\\alpha_p\\epsilon_{t-p}^{2} + \\sum_{q=1}^{Q}\\beta_q\\sigma_{t-q}^{2}\\]\n\\[\\epsilon_t = \\sigma_te_t\\]\n\\[e_t \\sim N(0,1)\\]\nA simple GARCH (1,1) can be defined as:\n\\[r_t= \\mu_t + \\epsilon_t\\]\n\\[\\sigma_t = \\omega + \\alpha_1\\epsilon_{t-1}^² + \\beta\\sigma_{t-1}^2\\]\n\\[\\epsilon_t = \\sigma_te_t\\]\n\\[e_t \\sim N(0,1)\\]\n\n4.2.1 Maximum Likelihood\nSince the errors are assumed to be conditionally i.i.d normal, maximum likelihood is a natural choice to estimate the unknown parameters, \\(\\theta\\) which contain both the mean and variance parameters. The normal likelihood for \\(T\\) independent variables is:\n\\[f(r;\\theta) = (2\\pi\\sigma_t^{2})^{-1/2}exp(-\\frac{-(r_t-\\mu_t)}{2\\sigma_t^2})\\]\nAnd the normal log-likelihood function is:\n\\[l(\\mathbf{r};\\theta)= \\sum_{t=1}^{T}\\log(f(r;\\theta)) = \\sum_{t=1}^{T}-\\frac{1}{2}\\log(2\\pi)-\\frac{1}{2}\\log(\\sigma_t^2)-\\frac{(r_t-\\mu)}{2\\sigma_{t}^2}\\]\nhttps://excalidraw.com/#room=7cb6f12f634b77bc46df,VM1vTjmFl12La60pEZuUKg\n\n\n\nFigure 4.1: Process of Generating New Path using GARCH(1,1) Model\n\n\nThis is a b isook created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97."
   }
 ]
