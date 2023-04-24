@@ -2,7 +2,7 @@
 
 ####
 # This is code to price the option value of first example of 
-# LSM paper, with three different metod, BIn Tree, LSM, LSPI
+# LSM paper, with three different method, BIn Tree, LSM, LSPI
 ####
 
 from typing import Callable, Dict, Sequence, Tuple, List
