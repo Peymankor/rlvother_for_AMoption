@@ -1,5 +1,56 @@
 # Price Models
 
-This is a book created from markdown and executable code.
+## Geometric Brownian Motion
+
+
+Consider a stochastic process $x$ described in the form of the following **Ito** process:
+
+$$dx_t = \mu(t).x_t.d_t + \sigma(t).x_t.dz_t$$
+
+The special case of $\mu(t)=\mu (constant)$ and $\sigma(t) = \sigma(constant)$ known as **Geomstric Brownian Motion**, to reflect the fact that the stochastic increment of the process $(\sigma.x_t.dz_t)$ is multiplicative to the level of the process $x_t$. If we cosnider this special case, we get:
+
+$$y_T = log(x_T) \sim \mathcal{N}(log(x_S) + (\mu-\frac{\sigma^2}{2})(T-S), \sigma^2(T-S))$$
+
+$$E[x_T|x_S]=x_S.e^{\mu(T-S)}$$
+$$Variance[x_T|x_S]=x_S^2.e^{2\mu(T-S)}.(e^{\sigma^2(T-S)}-1)$$
+
+
+## The GARCH model
+
+Generalized Autoregressive Conditional Heteroskedasticity (GARCH) process is defined as 
+
+$$r_t = \mu_t + \epsilon_t$$
+
+where $r_t$ is..., where $\mu_t$ can be any adapted model for the conditional mean. $\epsilon_t$ can be defined as :
+
+$$\sigma_t^2 = \omega + \sum_{p=1}^{P}\alpha_p\epsilon_{t-p}^{2} + \sum_{q=1}^{Q}\beta_q\sigma_{t-q}^{2}$$
+
+$$\epsilon_t = \sigma_te_t$$
+
+$$e_t \sim N(0,1)$$
+
+A simple GARCH (1,1) can be defined as:
+$$r_t= \mu_t + \epsilon_t$$
+$$\sigma_t = \omega + \alpha_1\epsilon_{t-1}^² + \beta\sigma_{t-1}^2$$
+$$\epsilon_t = \sigma_te_t$$
+
+$$e_t \sim N(0,1)$$
+
+### Maximum Likelihood
+
+Since the errors are assumed to be conditionally i.i.d normal, maximum likelihood is a natural choice to estimate the unknown parameters, $\theta$ which contain both the mean and variance parameters. The normal likelihood for $T$ independent variables is:
+
+$$f(r;\theta) = (2\pi\sigma_t^{2})^{-1/2}exp(-\frac{-(r_t-\mu_t)}{2\sigma_t^2})$$
+
+And the normal log-likelihood function is:
+
+$$l(\mathbf{r};\theta)= \sum_{t=1}^{T}\log(f(r;\theta)) = \sum_{t=1}^{T}-\frac{1}{2}\log(2\pi)-\frac{1}{2}\log(\sigma_t^2)-\frac{(r_t-\mu)}{2\sigma_{t}^2}$$
+
+<https://excalidraw.com/#room=7cb6f12f634b77bc46df,VM1vTjmFl12La60pEZuUKg>
+
+
+![Process of Generating New Path using GARCH(1,1) Model](figures_imprted/GARCH1flow.png){#fig-garch}
+
+This is a b isook created from markdown and executable code.
 
 See @knuth84 for additional discussion of literate programming.
