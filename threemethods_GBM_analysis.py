@@ -172,7 +172,7 @@ def scoring_sim_data(
 
 
 def continuation_curve_lsm(left_price, right_price,deltaprice,      
-                            lsm_policy_coef):
+                            lsm_policy_coef, K_value, expiry_val, num_steps_value_lsm):
 
     prices = np.arange(left_price,right_price,deltaprice)
     
@@ -293,12 +293,12 @@ if __name__ == '__main__':
     num_steps_scoring: int = 50
 
     num_steps_lspi: int = 10
-    num_training_paths_lspi: int = 1000
+    num_training_paths_lspi: int = 10000
     spot_price_frac_lspi: float = 0.1
     training_iters_lspi: int = 8
 
     num_steps_value_lsm = 50 
-    num_paths_train_lsm = 100000
+    num_paths_train_lsm = 10000
     K_value = 40
     k_value = 4
     num_paths_test_value_lsm = 10000
@@ -414,7 +414,9 @@ if __name__ == '__main__':
     lsm_bound_x, lsm_bound_y = continuation_curve_lsm(
                     left_price=20,right_price=40, 
                     deltaprice=0.1, 
-                    lsm_policy_coef=lsm_policy_coef_beta
+                    lsm_policy_coef=lsm_policy_coef_beta, 
+                    K_value=K_value, expiry_val=expiry_val, 
+                    num_steps_value_lsm= num_steps_value_lsm
     )
 
     print("Plotting boundary curve in Bin Tree method, Ex1 LSM paper")

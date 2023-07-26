@@ -134,6 +134,31 @@ class OptimalExerciseLSM:
         return np.average(prices), stoptime
 
 
+################# LSM price function ###########################################
+
+def lsm_price(spot_price_val, strike_val, expiry_val, rate_val, 
+              vol_val, steps_value,K_value, k_value, 
+              num_paths_train_val, num_paths_test_val):
+    
+    def payoff_func(_: float, s: float) -> float:
+            return max(strike_val - s, 0.)
+    
+    Testclass = OptimalExerciseLSM(spot_price=spot_price_val, payoff=payoff_func,expiry=expiry_val,
+                                        rate=rate_val, vol=vol_val,num_steps=steps_value)
+
+    train_data_v = Testclass.GBMprice_training(num_paths_train=num_paths_train_val)
+
+    lsm_policy_v = Testclass.train_LSM(training_data=train_data_v, num_paths_train=num_paths_train_val,
+                                            K=K_value, k=k_value)
+
+    test_data_v = Testclass.scoring_sim_data(num_paths_test=num_paths_test_val)
+
+    Option_price,_ = Testclass.option_price(scoring_data=test_data_v,Beta_list=lsm_policy_v,
+                                            k=k_value)
+    
+    return Option_price
+
+
 ################################ TEST Code ###################################
 
 

@@ -129,18 +129,30 @@ class Brent_GARCH:
 
         return realised, conditional
 
-    def generate_paths(self,num_time_steps,num_path_numbers, initial_price):
+    def generate_paths(self,num_time_steps,num_path_numbers, 
+                        initial_price, default_param = True):
 
         T_steps = num_time_steps
         path_numbers = num_path_numbers
         #resid = returns - mu
 
-        mle_param_v, _ = self.mle_opt()
+        if default_param==False:
+           
+           mle_param_v, _ = self.mle_opt()
+           mu = mle_param_v[0]
+           omega = mle_param_v[1]
+           alpha = mle_param_v[2]
+           beta = mle_param_v[3]
 
-        mu = mle_param_v[0]
-        omega = mle_param_v[1]
-        alpha = mle_param_v[2]
-        beta = mle_param_v[3]
+        #print("mu", mu)
+        #print("omega", omega)
+        #print("alpha", alpha)
+        #print("beta", beta)
+
+        mu = 0.0608
+        omega = 0.064
+        alpha = 0.087
+        beta = 0.901
 
         realised_v, conditional_v= self.compare_model()
 
