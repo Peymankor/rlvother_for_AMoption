@@ -130,7 +130,8 @@ class Brent_GARCH:
         return realised, conditional
 
     def generate_paths(self,num_time_steps,num_path_numbers, 
-                        initial_price, default_param = True):
+                        initial_price, default_param = True, 
+                        default_resid=True):
 
         T_steps = num_time_steps
         path_numbers = num_path_numbers
@@ -149,19 +150,29 @@ class Brent_GARCH:
         #print("alpha", alpha)
         #print("beta", beta)
 
+        # pre saved parameters
         mu = 0.0608
         omega = 0.064
         alpha = 0.087
         beta = 0.901
 
-        realised_v, conditional_v= self.compare_model()
-
         resid_sim = np.zeros((path_numbers, T_steps))
-        resid_sim[:,0] = realised_v[-1]
-
         conditional_sim = np.zeros((path_numbers, T_steps))
-        conditional_sim[:,0] = conditional_v[-1]
 
+        if default_resid == False:
+            
+            realised_v, conditional_v= self.compare_model()
+            resid_sim[:,0] = realised_v[-1]
+            conditional_sim[:,0] = conditional_v[-1]
+
+        # pre saved initial values
+        # based on data to 31 July, 2023
+
+        resid_sim[:,0] = 0.803
+        conditional_sim[:,0] = 1.63
+        
+        
+        
         S = np.zeros((path_numbers, T_steps))
         S[:,0] = initial_price
 
@@ -180,6 +191,32 @@ class Brent_GARCH:
 
         return S[:,1:]
 
+# This is helper function that generates garch price models
+# from daily price, so that it can have similar time steps like 
+# GBM model
+
+@dataclass(frozen=True)
+class Brent_GARCH_light:
+    
+    def garch_price_creator(self,option_horizon_indays,
+                        num_time_steps_val,
+                        num_path_numbers_val,
+                        initial_price_val):
+     
+     Brent_crude_df_local = pd.read_csv("data/raw_data/Brent_til_31July.csv")
+
+     class_brent = Brent_GARCH(brent_df=Brent_crude_df_local)
+     
+     garch_prices= class_brent.generate_paths(num_time_steps=option_horizon_indays, 
+                num_path_numbers=num_path_numbers_val, 
+                initial_price=initial_price_val)
+     
+
+     step_size = option_horizon_indays // num_time_steps_val
+     indexes = [i * step_size for i in range(num_time_steps_val)]
+     garch_prices_indexed = garch_prices[:, indexes]
+
+     return garch_prices_indexed
 
 ###################### TEST ##################
 

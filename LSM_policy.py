@@ -125,8 +125,11 @@ class OptimalExerciseLSM:
                     step += 1
                     if exercise_price >= continue_price:
                         prices[i] = np.exp(-self.rate * t) * exercise_price
+                        stoptime[i] = step
                         step = num_steps + 1
-                        stoptime[i] = t
+                        #stoptime[i] = t
+                        #stoptime[i] = step-1
+                        #print(step-1)
                 else:
                     step += 1
 
@@ -153,10 +156,10 @@ def lsm_price(spot_price_val, strike_val, expiry_val, rate_val,
 
     test_data_v = Testclass.scoring_sim_data(num_paths_test=num_paths_test_val)
 
-    Option_price,_ = Testclass.option_price(scoring_data=test_data_v,Beta_list=lsm_policy_v,
+    Option_price,stop_times_val = Testclass.option_price(scoring_data=test_data_v,Beta_list=lsm_policy_v,
                                             k=k_value)
     
-    return Option_price
+    return Option_price, stop_times_val
 
 
 ################################ TEST Code ###################################

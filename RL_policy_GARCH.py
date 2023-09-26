@@ -28,65 +28,14 @@ pretty.install()
 
 TrainingDataType = Tuple[int, float, float]
 
-
-def european_put_price(
-    spot_price: float,
-    expiry: float,
-    rate: float,
-    vol: float,
-    strike: float
-) -> float:
-    sigma_sqrt: float = vol * np.sqrt(expiry)
-    d1: float = (np.log(spot_price / strike) +
-                 (rate + vol ** 2 / 2.) * expiry) \
-        / sigma_sqrt
-    d2: float = d1 - sigma_sqrt
-    return strike * np.exp(-rate * expiry) * norm.cdf(-d2) \
-        - spot_price * norm.cdf(-d1)
-
-
-def training_sim_data(
-    expiry: float,
-    num_steps: int,
-    num_paths: int,
-    spot_price: float,
-    spot_price_frac: float,
-    rate: float,
-    vol: float
-) -> Sequence[TrainingDataType]:
-    ret: List[TrainingDataType] = []
-    dt: float = expiry / num_steps
-    spot: float = spot_price
-    vol2: float = vol * vol
-
-    mean2: float = spot * spot
-    var: float = mean2 * spot_price_frac * spot_price_frac
-    log_mean: float = np.log(mean2 / np.sqrt(var + mean2))
-    log_stdev: float = np.sqrt(np.log(var / mean2 + 1))
-
-    for _ in range(num_paths):
-        price: float = np.random.lognormal(log_mean, log_stdev)
-        
-        #print("Initial Starting Price", price )
-        
-        for step in range(num_steps):
-            m: float = np.log(price) + (rate - vol2 / 2) * dt
-            v: float = vol2 * dt
-            next_price: float = np.exp(np.random.normal(m, np.sqrt(v)))
-            ret.append((step, price, next_price))
-            price = next_price
-    return ret
-
 def fitted_lspi_put_option(
     expiry: float,
     num_steps: int,
-    num_paths: int,
-    spot_price: float,
-    spot_price_frac: float,
     rate: float,
-    vol: float,
     strike: float,
-    training_iters: int
+    training_iters: int,
+    training_data: Sequence[TrainingDataType]
+
 ) -> LinearFunctionApprox[Tuple[float, float]]:
 
     num_laguerre: int = 4
@@ -104,15 +53,15 @@ def fitted_lspi_put_option(
         lambda t_s: (t_s[0] / expiry) ** 2
     ]
 
-    training_data: Sequence[TrainingDataType] = training_sim_data(
-        expiry=expiry,
-        num_steps=num_steps,
-        num_paths=num_paths,
-        spot_price=spot_price,
-        spot_price_frac=spot_price_frac,
-        rate=rate,
-        vol=vol
-    )
+    #training_data: Sequence[TrainingDataType] = training_sim_data(
+    #    expiry=expiry,
+    #    num_steps=num_steps,
+    #    num_paths=num_paths,
+    #    spot_price=spot_price,
+    #    spot_price_frac=spot_price_frac,
+    #    rate=rate,
+    #    vol=vol
+    #)
 
     dt: float = expiry / num_steps
     gamma: float = np.exp(-rate * dt)
@@ -151,27 +100,6 @@ def fitted_lspi_put_option(
         weights=Weights.create(wts)
     )
 
-
-def scoring_sim_data(
-    expiry: float,
-    num_steps: int,
-    num_paths: int,
-    spot_price: float,
-    rate: float,
-    vol: float
-) -> np.ndarray:
-    paths: np.ndarray = np.empty([num_paths, num_steps + 1])
-    dt: float = expiry / num_steps
-    vol2: float = vol * vol
-    for i in range(num_paths):
-        paths[i, 0] = spot_price
-        for step in range(num_steps):
-            m: float = np.log(paths[i, step]) + (rate - vol2 / 2) * dt
-            v: float = vol2 * dt
-            paths[i, step + 1] = np.exp(np.random.normal(m, np.sqrt(v)))
-    return paths
-
-
 def option_price(
     scoring_data: np.ndarray,
     func: FunctionApprox[Tuple[float, float]],
@@ -196,93 +124,36 @@ def option_price(
             step += 1
             if (exercise_price >= continue_price) and (exercise_price>0):
                 prices[i] = np.exp(-rate * t) * exercise_price
-                stoptime_rl[i] = step-1
+                stoptime_rl[i] = t 
                 step = num_steps + 1
 
     return np.average(prices), stoptime_rl
 
-def RL_GBM_Policy(spot_price_val,strike_val, expiry_val, rate_val
-                  , vol_val, num_scoring_paths,num_steps_scoring, 
-                  num_steps_lspi, num_training_paths_lspi, spot_price_frac_lspi, 
-                  training_iters_lspi):
+def RL_GBM_Policy_GARCH(expiry_val,num_steps_lspi, rate_val, strike_val
+                  , training_iters_lspi, training_data_val,scoring_data_val ):
     
     flspi: LinearFunctionApprox[Tuple[float, float]] = fitted_lspi_put_option(
-        expiry=expiry_val,
-        num_steps=num_steps_lspi,
-        num_paths=num_training_paths_lspi,
-        spot_price=spot_price_val,
-        spot_price_frac=spot_price_frac_lspi,
-        rate=rate_val,
-        vol=vol_val,
+        expiry = expiry_val ,
+        num_steps = num_steps_lspi,
+        rate = rate_val,
         strike=strike_val,
-        training_iters=training_iters_lspi
+        training_iters= training_iters_lspi,
+        training_data= training_data_val
     )
 
-    scoring_data: np.ndarray = scoring_sim_data(
-        expiry=expiry_val,
-        num_steps=num_steps_scoring,
-        num_paths=num_scoring_paths,
-        spot_price=spot_price_val,
-        rate=rate_val,
-        vol=vol_val
-    )
 
-    lspi_opt_price,stop_time_val_rl = option_price(
-        scoring_data=scoring_data,
+    lspi_opt_price,_ = option_price(
+        scoring_data=scoring_data_val,
         func=flspi,
         expiry=expiry_val,
         rate=rate_val,
         strike=strike_val,
     )
 
-    return lspi_opt_price,stop_time_val_rl
+    return lspi_opt_price
 
 
-    
-#num_scoring_paths: int = 1000
-#num_steps_scoring: int = 50
 
-##num_steps_lspi: int = 10
-#num_training_paths_lspi: int = 10000
-#spot_price_frac_lspi: float = 0.01
-#training_iters_lspi: int = 20
-
-#spot_price_val: float = 36.0
-##strike_val: float = 40.0
-#expiry_val: float = 1.0
-#rate_val: float = 0.06
-#vol_val: float = 0.2
-#num_steps_value_lsm = 50 
-
-
-#Option_Price_RL=RL_GBM_Policy(spot_price_val=spot_price_val, strike_val=strike_val,
-#              expiry_val=expiry_val, rate_val=rate_val,vol_val=vol_val,
-#              num_training_paths_lspi=num_training_paths_lspi, 
-#              spot_price_frac_lspi=spot_price_frac_lspi, 
-#              training_iters_lspi=training_iters_lspi, 
-#              num_scoring_paths=num_scoring_paths, 
-#              num_steps_scoring=num_steps_scoring,
-#              num_steps_lspi=num_steps_lspi)
-
-
-#print(f"LSPI Price = {Option_Price_RL:.3f}")
-
-#RES = []
-
-#for ietr in np.arange(3):
-
-#    res = RL_GBM_Policy(spot_price_val=spot_price_val, strike_val=strike_val,
-##              expiry_val=expiry_val, rate_val=rate_val,vol_val=vol_val,
-#              num_training_paths_lspi=num_training_paths_lspi, 
-#              spot_price_frac_lspi=spot_price_frac_lspi, 
-#              training_iters_lspi=training_iters_lspi, 
-#              num_scoring_paths=num_scoring_paths, 
-#              num_steps_scoring=num_steps_scoring,
-#              num_steps_lspi=num_steps_lspi)
-    
-#    RES.append(res)
-
-#RES
 
 #####################################################################################
 #####################################################################################
