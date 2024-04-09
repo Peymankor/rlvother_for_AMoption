@@ -83,7 +83,7 @@ dataset_test = garch_price_class.garch_price_creator(
 
 Option_price_garch,_ = garchclass.option_price(scoring_data=dataset_test,
                                                Beta_list=lsm_policy_v_garch, k=k_value)
-
+Option_price_garch
 
 
 Option_price_garch

@@ -459,7 +459,7 @@ class AdamGradient:
     @staticmethod
     def default_settings() -> AdamGradient:
         return AdamGradient(
-            learning_rate=0.001,
+            learning_rate=0.00001,
             decay1=0.9,
             decay2=0.999
         )

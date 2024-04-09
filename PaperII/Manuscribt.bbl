@@ -1,0 +1,26 @@
+\begin{thebibliography}{3}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Cox et~al.(1979)Cox, Ross, and Rubinstein]{cox1979option}
+John~C Cox, Stephen~A Ross, and Mark Rubinstein.
+\newblock Option pricing: A simplified approach.
+\newblock \emph{Journal of financial Economics}, 7\penalty0 (3):\penalty0
+  229--263, 1979.
+
+\bibitem[Lagoudakis and Parr(2003)]{lagoudakis2003least}
+Michail~G Lagoudakis and Ronald Parr.
+\newblock Least-squares policy iteration.
+\newblock \emph{The Journal of Machine Learning Research}, 4:\penalty0
+  1107--1149, 2003.
+
+\bibitem[Longstaff and Schwartz(2001)]{longstaff2001valuing}
+F.~A. Longstaff and E.~S. Schwartz.
+\newblock Valuing american options by simulation: A simple least-squares
+  approach.
+\newblock \emph{Review of Financial Studies}, 14:\penalty0 113--147, 2001.
+
+\end{thebibliography}

@@ -58,7 +58,6 @@ class BinPolicy:
                                 (1-q) * C[(k+1, m)])
                 exercise_value =  max(self.strike - self.spot_price * (u ** (2*m-k)),0)
             
-
                 C[(k, m)] = max(future_value, exercise_value)
     
         return C[(0,0)]

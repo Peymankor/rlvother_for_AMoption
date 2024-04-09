@@ -394,22 +394,22 @@ if __name__ == '__main__':
     taxis = np.arange(dt,1+dt,dt)
     
 
-    fig, ax = plt.subplots(figsize=(11, 7))
-    for price_path in np.arange(len(test_data_v_stoptime)):
+    #fig, ax = plt.subplots(figsize=(11, 7))
+    #for price_path in np.arange(len(test_data_v_stoptime)):
         
-        price_list = test_data_v_stoptime[price_path]
+    #    price_list = test_data_v_stoptime[price_path]
         
-        color = next(ax._get_lines.prop_cycler)['color']
-        ax.plot(taxis, price_list, color = color)        
+    #    color = next(ax._get_lines.prop_cycler)['color']
+    #    ax.plot(taxis, price_list, color = color)        
         
-        stopindex = (lsm_stoptimes[price_path]*num_steps_value_lsm -1)
-        ax.plot(lsm_stoptimes[price_path], price_list[int(stopindex)], marker = "*", color=color, markersize=10)
+    #    stopindex = (lsm_stoptimes[price_path]*num_steps_value_lsm -1)
+    #    ax.plot(lsm_stoptimes[price_path], price_list[int(stopindex)], marker = "*", color=color, markersize=10)
 
-    ax.set_xlabel ("Time (Normalized)", fontsize=20)
-    ax.set_ylabel("Underlying Price", fontsize=20)
-    ax.grid(True)
-    ax.set_title("Stopping Time at Test Paths", fontsize=25)
-    plt.show()
+    #ax.set_xlabel ("Time (Normalized)", fontsize=20)
+    #ax.set_ylabel("Underlying Price", fontsize=20)
+    #ax.grid(True)
+    #ax.set_title("Stopping Time at Test Paths", fontsize=25)
+    #plt.show()
 
     lsm_bound_x, lsm_bound_y = continuation_curve_lsm(
                     left_price=20,right_price=40, 

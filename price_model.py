@@ -55,6 +55,7 @@ Brent_crude_df = pd.read_excel("https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls
                         sheet_name="Data 1")
 ###############################################
 
+Brent_crude_df
 
 @dataclass(frozen=True)
 class Brent_GARCH:
@@ -119,6 +120,11 @@ class Brent_GARCH:
         alpha = mle_param_v[2]
         beta = mle_param_v[3]
 
+        print("mu", mu)
+        print("omega", omega)
+        print("alpha", alpha)
+        print("beta", beta)
+
         long_run = (omega/(1 - alpha - beta))**(1/2)
         resid = returns - mu
         realised = abs(resid)
@@ -145,15 +151,15 @@ class Brent_GARCH:
            alpha = mle_param_v[2]
            beta = mle_param_v[3]
 
-        #print("mu", mu)
-        #print("omega", omega)
-        #print("alpha", alpha)
-        #print("beta", beta)
+        print("mu", mu)
+        print("omega", omega)
+        print("alpha", alpha)
+        print("beta", beta)
 
         # pre saved parameters
-        mu = 0.0608
-        omega = 0.064
-        alpha = 0.087
+        mu = 0.0619
+        omega = 0.0657
+        alpha = 0.0881
         beta = 0.901
 
         resid_sim = np.zeros((path_numbers, T_steps))
@@ -196,27 +202,46 @@ class Brent_GARCH:
 # GBM model
 
 @dataclass(frozen=True)
-class Brent_GARCH_light:
+class BrentGARCHPrice_Light:
     
-    def garch_price_creator(self,option_horizon_indays,
-                        num_time_steps_val,
-                        num_path_numbers_val,
-                        initial_price_val):
-     
-     Brent_crude_df_local = pd.read_csv("data/raw_data/Brent_til_31July.csv")
+    def generate_paths(self, num_time_steps, num_path_numbers, 
+                       initial_price, expiry_val):
+        # Pre-saved GARCH parameters, to Nov 2023 date
 
-     class_brent = Brent_GARCH(brent_df=Brent_crude_df_local)
-     
-     garch_prices= class_brent.generate_paths(num_time_steps=option_horizon_indays, 
-                num_path_numbers=num_path_numbers_val, 
-                initial_price=initial_price_val)
-     
+        mu = 0.0619
+        omega = 0.0657
+        alpha = 0.0881
+        beta = 0.901
 
-     step_size = option_horizon_indays // num_time_steps_val
-     indexes = [i * step_size for i in range(num_time_steps_val)]
-     garch_prices_indexed = garch_prices[:, indexes]
 
-     return garch_prices_indexed
+        #mu = 0.0608
+        #omega = 0.064
+        #alpha = 0.087
+        #beta = 0.901
+
+        num_time_steps_per_day  = int(expiry_val*360)
+
+        resid_sim = np.zeros((num_path_numbers, num_time_steps_per_day+1))
+        conditional_sim = np.zeros((num_path_numbers, num_time_steps_per_day+1))
+        S = np.zeros((num_path_numbers, num_time_steps_per_day +1))
+        S[:, 0] = initial_price
+
+        #for path in range(num_path_numbers):
+        for t in range(1, num_time_steps_per_day):
+          conditional_sim[:, t] = np.sqrt(omega + alpha * resid_sim[:, t-1]**2 + beta * conditional_sim[:, t-1]**2)
+          r = ss.norm.rvs(loc=mu, scale=conditional_sim[:, t], size=num_path_numbers)
+          resid_sim[:, t] = r 
+          S[:, t] = S[:, t-1] * (1 + (r / 100))
+        
+        garch_price_all_index = S[:, 1:]
+        
+        step_size = expiry_val*360 // num_time_steps
+        indexes = [i * step_size for i in range(num_time_steps)]
+        #print("Indexes: ", indexes)
+        garch_prices_indexed = garch_price_all_index[:, indexes]
+        
+        
+        return garch_prices_indexed
 
 ###################### TEST ##################
 
@@ -248,26 +273,30 @@ if __name__ == "__main__":
 
 # Plot realized volatility and mdel
 
+  plt.style.use('ggplot')
   class_brent = Brent_GARCH(brent_df=Brent_crude_df)
   clean_data, _ = class_brent.data_process()
   garch_prices= class_brent.generate_paths(num_time_steps=50, 
-                num_path_numbers=100, initial_price=115.3)
+                num_path_numbers=100, initial_price=115.3, default_param=False)
 
 
   realized_val, conditional_val = class_brent.compare_model()
 
   fig, ax = plt.subplots()
 
-  ax.plot(clean_data["Date"][1:] ,realized_val, label="Realized Volatility")
+  ax.plot(clean_data["Date"][1:], realized_val, 'o', markersize=3, label="Realized Volatility")
   ax.plot(clean_data["Date"][1:], conditional_val, 
-                label = "Conditional Volatility, GARCH Model")
+                label = "Conditional Volatility, GARCH (1,1) Model")
   ax.legend(loc="upper left")
   ax.yaxis.set_major_formatter(mtick.PercentFormatter())
   ax.xaxis.set_major_locator(mdates.MonthLocator(interval=9))
-  ax.tick_params(axis='x', labelrotation=90)
-  ax.set_ylabel(r'Volatility [$\sigma_t$]')
-  print("Plot Realized Volatility  an Conditional through GARCH model")
+  ax.tick_params(axis='x', labelrotation=90, colors='black')
+  ax.tick_params(axis='y', colors='black')
+  ax.set_ylabel(r'Volatility [$\sigma_t$]',  color='black')
+  ax.set_xlabel("Date", color='black')
+  print("Plot Realized Volatility  an Conditional through GARCH(1,1) model")
   plt.show()
+  plt.close()
 
   
 # Make New Realziations  100, with 

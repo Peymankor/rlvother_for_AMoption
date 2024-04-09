@@ -25,4 +25,4 @@ def bin_tree_price(spot_price_val, strike_val,expiry_val, rate_val,
             opt_ex_bin_tree.option_exercise_boundary(policy_seq, False)
     bin_tree_x, bin_tree_y = zip(*bin_tree_ex_boundary)
 
-    return bin_tree_price
+    return bin_tree_price, bin_tree_x, bin_tree_y

@@ -89,7 +89,7 @@ def fitted_lspi_put_option(
     training_iters: int
 ) -> LinearFunctionApprox[Tuple[float, float]]:
 
-    num_laguerre: int = 4
+    num_laguerre: int = 5
     epsilon: float = 1e-3
     #print(epsilon)
 
@@ -98,11 +98,17 @@ def fitted_lspi_put_option(
     features += [(lambda t_s, i=i: np.exp(-t_s[1] / (2 * strike)) *
                   lagval(t_s[1] / strike, ident[i]))
                  for i in range(num_laguerre)]
+    
     features += [
-        lambda t_s: np.cos(-t_s[0] * np.pi / (2 * expiry)),
-        lambda t_s: np.log(expiry - t_s[0]) if t_s[0] != expiry else 0.,
-        lambda t_s: (t_s[0] / expiry) ** 2
-    ]
+            (lambda t_s, i=i: np.exp(-t_s[0] / (2 * expiry)) * lagval(t_s[0] / expiry, ident[i]))
+            for i in range(num_laguerre)
+        ]
+
+    #features += [
+    #    lambda t_s: np.cos(-t_s[0] * np.pi / (2 * expiry)),
+    ##    lambda t_s: np.log(expiry - t_s[0]) if t_s[0] != expiry else 0.,
+    #   lambda t_s: (t_s[0] / expiry) ** 2
+    #]
 
     training_data: Sequence[TrainingDataType] = training_sim_data(
         expiry=expiry,
@@ -113,6 +119,8 @@ def fitted_lspi_put_option(
         rate=rate,
         vol=vol
     )
+
+    #print(training_data.shape)
 
     dt: float = expiry / num_steps
     gamma: float = np.exp(-rate * dt)
@@ -145,6 +153,8 @@ def fitted_lspi_put_option(
             b_vec += phi1 * (1 - cont_cond[i]) * exer[i] * gamma
         wts = a_inv.dot(b_vec)
         #print(f"Iteration Number = {iteration_number:.3f}")
+        #print("The Weight parameters of Q value are:")
+        #print(wts)
 
     return LinearFunctionApprox.create(
         feature_functions=features,
@@ -169,7 +179,7 @@ def scoring_sim_data(
             m: float = np.log(paths[i, step]) + (rate - vol2 / 2) * dt
             v: float = vol2 * dt
             paths[i, step + 1] = np.exp(np.random.normal(m, np.sqrt(v)))
-    return paths
+    return paths[:,1:]
 
 
 def option_price(
@@ -180,22 +190,23 @@ def option_price(
     strike: float
 ) -> float:
     num_paths: int = scoring_data.shape[0]
-    num_steps: int = scoring_data.shape[1] - 1
-    stoptime_rl: np.ndarray = np.zeros(num_paths)
-
+    num_steps: int = scoring_data.shape[1]
+    #stoptime_rl: np.ndarray = np.zeros(num_paths)
+    stoptime_rl: np.ndarray = np.ones(num_paths)*51
     prices: np.ndarray = np.zeros(num_paths)
     dt: float = expiry / num_steps
 
     for i, path in enumerate(scoring_data):
-        step: int = 0
+        step: int = 1
         while step <= num_steps:
             t: float = step * dt
-            exercise_price: float = max(strike - path[step], 0)
-            continue_price: float = func.evaluate([(t, path[step])])[0] \
+            exercise_price: float = max(strike - path[step-1], 0)
+            continue_price: float = func.evaluate([(t, path[step-1])])[0] \
                 if step < num_steps else 0.
             step += 1
             if (exercise_price >= continue_price) and (exercise_price>0):
                 prices[i] = np.exp(-rate * t) * exercise_price
+                #prices[i] = np.exp(-rate * (step+1) * dt) * exercise_price
                 stoptime_rl[i] = step-1
                 step = num_steps + 1
 
@@ -217,7 +228,7 @@ def RL_GBM_Policy(spot_price_val,strike_val, expiry_val, rate_val
         strike=strike_val,
         training_iters=training_iters_lspi
     )
-
+    #print(flspi)
     scoring_data: np.ndarray = scoring_sim_data(
         expiry=expiry_val,
         num_steps=num_steps_scoring,

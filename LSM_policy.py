@@ -104,7 +104,7 @@ class OptimalExerciseLSM:
         num_steps = self.num_steps-1   
         num_paths: int = scoring_data.shape[0]
         prices: np.ndarray = np.zeros(num_paths)
-        stoptime: np.ndarray = np.zeros(num_paths)
+        stoptime: np.ndarray = np.ones(num_paths)*51
         dt: float = self.expiry / self.num_steps
 
         #Beta_list.reverse()

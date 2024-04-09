@@ -54,12 +54,12 @@ if __name__ == "__main__":
     num_paths_test_val = 10000
 
 
-    num_scoring_paths_val: int = 5000
+    num_scoring_paths_val: int = 50000
     num_steps_scoring: int = 50
-    num_steps_lspi: int = 10
-    num_training_paths_lspi_val: int = 1000
-    spot_price_frac_lspi: float = 0.000000001
-    training_iters_lspi_val: int = 10
+    num_steps_lspi: int = 15
+    num_training_paths_lspi_val: int = 10000
+    spot_price_frac_lspi: float = 0.0000001
+    training_iters_lspi_val: int = 8
 
     S0_values_table1 = np.array([36,38,40,42, 44])
     sd_values_table1 = np.array([0.2, 0.4])
@@ -88,14 +88,14 @@ if __name__ == "__main__":
                                          expiry_val=T_table1, rate_val=rate_val, vol_val=sd_table1)
                      
 
-                     price_lsm = lsm_price(spot_price_val=S0_table1, strike_val=strike_val,
+                     price_lsm,_ = lsm_price(spot_price_val=S0_table1, strike_val=strike_val,
                                 expiry_val=T_table1, rate_val=rate_val, vol_val=sd_table1, 
                                     steps_value=num_steps_value_lsm,
                                     K_value=K_value, k_value=k_value, num_paths_train_val=num_paths_train_val,
                                     num_paths_test_val=num_paths_test_val)
                      
 
-                     price_rl = RL_GBM_Policy(spot_price_val=S0_table1, strike_val=strike_val, expiry_val=T_table1,
+                     price_rl,_ = RL_GBM_Policy(spot_price_val=S0_table1, strike_val=strike_val, expiry_val=T_table1,
                       rate_val=rate_val, vol_val=sd_table1, num_scoring_paths=num_scoring_paths_val,
                       num_steps_scoring=num_steps_scoring, num_steps_lspi=num_steps_lspi,
                       num_training_paths_lspi=num_training_paths_lspi_val,spot_price_frac_lspi=spot_price_frac_lspi,
