@@ -1,14 +1,14 @@
 # Fdb version 3
-["bibtex Main_template"] 1713964271 "Main_template.aux" "Main_template.bbl" "Main_template" 1713964273
+["bibtex Main_template"] 1713964563 "Main_template.aux" "Main_template.bbl" "Main_template" 1713964565
   "./Definitions/mdpi.bst" 1709220635 23653 62187687754729c82001f3236396925e ""
-  "Main_template.aux" 1713964252 17305 c952e64c517d9efc24617309bb5c911e "pdflatex"
-  "paper.bib" 1713964270 12047 bd7a3293f0308effb90ccf77b6906ded ""
+  "Main_template.aux" 1713964549 17305 c952e64c517d9efc24617309bb5c911e "pdflatex"
+  "paper.bib" 1713964563 11651 1744c6893c8c51dced2e416f4dcc6ada ""
   (generated)
-  "Main_template.blg"
   "Main_template.bbl"
-["pdflatex"] 1713964271 "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.tex" "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.pdf" "Main_template" 1713964273
+  "Main_template.blg"
+["pdflatex"] 1713964563 "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.tex" "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.pdf" "Main_template" 1713964565
   "/etc/texmf/web2c/texmf.cnf" 1671029111 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.aux" 1713964252 17305 c952e64c517d9efc24617309bb5c911e ""
+  "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.aux" 1713964549 17305 c952e64c517d9efc24617309bb5c911e ""
   "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.tex" 1713963892 65931 dbe4d41e1d43570d175646259c781379 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -267,17 +267,17 @@
   "Figs/price_ite_garch_plot.png" 1711562784 138886 835dfcb1b31cce660bb3420529fe1eb9 ""
   "Figs/rllsmmoves.png" 1709826127 77915 8c673540e031d715b6e147f5f2d19980 ""
   "Figs/rllsmmoves04vol.png" 1709826127 80800 c04c29066295cde8047babc725ae73f4 ""
-  "Main_template.aux" 1713964252 17305 c952e64c517d9efc24617309bb5c911e "pdflatex"
-  "Main_template.bbl" 1713964271 2266 71e555808482a446c46c110c7c7a99a3 "bibtex Main_template"
+  "Main_template.aux" 1713964549 17305 c952e64c517d9efc24617309bb5c911e "pdflatex"
+  "Main_template.bbl" 1713964563 2065 6870f0c5d3c207ca4b4abc5d1a876a91 "bibtex Main_template"
   "Main_template.out" 0 -1 0 "pdflatex"
   "Main_template.tex" 1713963892 65931 dbe4d41e1d43570d175646259c781379 ""
   "img/GARCH1flow.png" 1710009382 78243 26298f4b7e21e7a0a906d9dc4d9e5060 ""
   "img/bin.png" 1712653640 38513 0500cfda990bc041000c6536c69b0d62 ""
   "img/stopping.png" 1712142841 58997 1b0f398b0562db1a3de9592f22b26bd3 ""
   (generated)
-  "Main_template.pdf"
-  "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.log"
   "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.pdf"
-  "Main_template.aux"
-  "Main_template.log"
   "Main_template.out"
+  "Main_template.log"
+  "/home/peyman/Documents/PhD_UiS/PhD_Papers/Paper II/rlvother_for_AMoption/MDPI/Main_template.log"
+  "Main_template.aux"
+  "Main_template.pdf"
