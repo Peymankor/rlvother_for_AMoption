@@ -8,6 +8,17 @@
   year={2000}
 }
 
+@article{longstaff2001valuing,
+  title={Valuing American options by simulation: a simple least-squares approach},
+  author={Longstaff, Francis A and Schwartz, Eduardo S},
+  journal={The review of financial studies},
+  volume={14},
+  number={1},
+  pages={113--147},
+  year={2001},
+  publisher={Oxford University Press}
+}
+
 @article{antos2008learning,
   title={Learning near-optimal policies with Bellman-residual minimization based fitted policy iteration and a single sample path},
   author={Antos, A. and Szepesvari, C. and Munos, R.},
@@ -253,15 +264,6 @@ Certainly! Here's the provided references formatted in BibTeX:
   year={2018}
 }
 
-@article{longstaff2001valuing,
-  title={Valuing American options by simulation: A simple least-squares approach},
-  author={Longstaff, F. A. and Schwartz, E. S.},
-  journal={Review of Financial Studies},
-  volume={14},
-  pages={113--147},
-  year={2001}
-}
-
 @article{macmillan1986analytic,
   title={Analytic approximation for the American put option},
   author={MacMillan, L. W.},
@@ -328,31 +330,50 @@ Certainly! Here's the provided references formatted in BibTeX:
   pages={141--148},
   year={1983}
 }
-@article{0b9b8115-a8b8-3422-8e1c-a62077de6621,
- ISSN = {00223808, 1537534X},
- URL = {http://www.jstor.org/stable/1831029},
- abstract = {If options are correctly priced in the market, it should not be possible to make sure profits by creating portfolios of long and short positions in options and their underlying stocks. Using this principle, a theoretical valuation formula for options is derived. Since almost all corporate liabilities can be viewed as combinations of options, the formula and the analysis that led to it are also applicable to corporate liabilities such as common stock, corporate bonds, and warrants. In particular, the formula can be used to derive the discount that should be applied to a corporate bond because of the possibility of default.},
- author = {Fischer Black and Myron Scholes},
- journal = {Journal of Political Economy},
- number = {3},
- pages = {637--654},
- publisher = {University of Chicago Press},
- title = {The Pricing of Options and Corporate Liabilities},
- urldate = {2024-04-16},
- volume = {81},
- year = {1973}
+@book{rao2022foundations,
+  title={Foundations of reinforcement learning with applications in finance},
+  author={Rao, Ashwin and Jelvis, Tikhon},
+  year={2022},
+  publisher={Chapman and Hall/CRC}
 }
-@article{0f7f88bf-c55e-3458-a684-0837ac6c3950,
- ISSN = {00221090, 17566916},
- URL = {http://www.jstor.org/stable/2331347},
- abstract = {We consider the problem of pricing an American contingent claim whose payoff depends on several sources of uncertainty. Several efficient numerical lattice-based techniques exist for pricing American securities depending on one or few (up to three) risk sources. However, these methods cannot be used for high dimensional problems, since their memory requirement is exponential in the number of risk sources. We present an efficient numerical technique that combines Monte Carlo simulation with a particular partitioning method of the underlying assets space, which we call Stratified State Aggregation (SSA). Using this technique, we can compute accurate approximations of prices of American securities with an arbitrary number of underlying assets. Our numerical experiments show that the method is practical for pricing American claims depending on up to 400 risk sources.},
- author = {Jérôme Barraquand and Didier Martineau},
- journal = {The Journal of Financial and Quantitative Analysis},
- number = {3},
- pages = {383--405},
- publisher = {Cambridge University Press},
- title = {Numerical Valuation of High Dimensional Multivariate American Securities},
- urldate = {2024-04-16},
- volume = {30},
- year = {1995}
+
+@article{black1972valuation,
+  title={The valuation of option contracts and a test of market efficiency},
+  author={Black, Fischer and Scholes, Myron},
+  journal={The journal of finance},
+  volume={27},
+  number={2},
+  pages={399--417},
+  year={1972},
+  publisher={JSTOR}
+}
+
+@book{sutton2018reinforcement,
+  title={Reinforcement Learning: An Introduction},
+  author={Sutton, Richard S and Barto, Andrew G},
+  year={2018},
+  edition={2},
+  publisher={MIT Press},
+  address={Cambridge, MA, USA}
+}
+
+@Article{sym14071324,
+AUTHOR = {Li, Nan},
+TITLE = {An Iteration Algorithm for American Options Pricing Based on Reinforcement Learning},
+JOURNAL = {Symmetry},
+VOLUME = {14},
+YEAR = {2022},
+NUMBER = {7},
+ARTICLE-NUMBER = {1324},
+URL = {https://www.mdpi.com/2073-8994/14/7/1324},
+ISSN = {2073-8994},
+ABSTRACT = {In this paper, we present an iteration algorithm for the pricing of American options based on reinforcement learning. At each iteration, the method approximates the expected discounted payoff of stopping times and produces those closer to optimal. In the convergence analysis, a finite sample bound of the algorithm is derived. The algorithm is evaluated on a multi-dimensional Black-Scholes model and a symmetric stochastic volatility model, the numerical results implied that our algorithm is accurate and efficient for pricing high-dimensional American options.},
+DOI = {10.3390/sym14071324}
+}
+
+@article{bloch2023american,
+  title={American Options: Models and Algorithms},
+  author={Bloch, Daniel Alexandre},
+  journal={Available at SSRN 4532952},
+  year={2023}
 }
