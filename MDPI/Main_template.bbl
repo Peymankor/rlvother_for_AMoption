@@ -1,33 +1,56 @@
 \begin{thebibliography}{999}
 
-\bibitem[Longstaff and Schwartz(2001)]{longstaff2001valuing}
-Longstaff, F.A.; Schwartz, E.S.
-\newblock Valuing American options by simulation: A simple least-squares
-  approach.
-\newblock {\em Review of Financial Studies} {\bf 2001}, {\em 14},~113--147.
+\bibitem[Brennan and Schwartz(1977)]{cd976fbc-eac2-3d0f-949d-b0d2cc13bd9a}
+Brennan, M.J.; Schwartz, E.S.
+\newblock The Valuation of American Put Options.
+\newblock {\em The Journal of Finance} {\bf 1977}, {\em 32},~449--462.
+
+\bibitem[Black and Scholes(1973)]{0b9b8115-a8b8-3422-8e1c-a62077de6621}
+Black, F.; Scholes, M.
+\newblock The Pricing of Options and Corporate Liabilities.
+\newblock {\em Journal of Political Economy} {\bf 1973}, {\em 81},~637--654.
 
 \bibitem[Cox et~al.(1979)Cox, Ross, and Rubinstein]{cox1979option}
 Cox, J.C.; Ross, S.A.; Rubinstein, M.
 \newblock Option pricing: A simplified approach.
 \newblock {\em Journal of financial Economics} {\bf 1979}, {\em 7},~229--263.
 
-\bibitem[Lagoudakis and Parr(2003)]{lagoudakis2003least}
-Lagoudakis, M.G.; Parr, R.
-\newblock Least-squares policy iteration.
-\newblock {\em The Journal of Machine Learning Research} {\bf 2003}, {\em
-  4},~1107--1149.
+\bibitem[Johnson(1983)]{johnson1983analytic}
+Johnson, H.E.
+\newblock An analytic approximation for the American put price.
+\newblock {\em Journal of Financial and Quantitative Analysis} {\bf 1983}, {\em
+  18},~141--148.
+
+\bibitem[BELLMAN(1957)]{cbf00562-4ec1-30aa-96c9-a7b516c45b2b}
+BELLMAN, R.
+\newblock A Markovian Decision Process.
+\newblock {\em Journal of Mathematics and Mechanics} {\bf 1957}, {\em
+  6},~679--684.
+
+\bibitem[Barraquand and Martineau(1995)]{0f7f88bf-c55e-3458-a684-0837ac6c3950}
+Barraquand, J.; Martineau, D.
+\newblock Numerical Valuation of High Dimensional Multivariate American
+  Securities.
+\newblock {\em The Journal of Financial and Quantitative Analysis} {\bf 1995},
+  {\em 30},~383--405.
+
+\bibitem[Longstaff and Schwartz(2001)]{longstaff2001valuing}
+Longstaff, F.A.; Schwartz, E.S.
+\newblock Valuing American options by simulation: A simple least-squares
+  approach.
+\newblock {\em Review of Financial Studies} {\bf 2001}, {\em 14},~113--147.
 
 \bibitem[Li et~al.(2009)Li, Szepesvari, and Schuurmans]{li2009learning}
 Li, Y.; Szepesvari, C.; Schuurmans, D.
 \newblock Learning exercise policies for American options.
 \newblock In Proceedings of the Proceedings of the 12th International
   Conference on Artificial Intelligence and Statistics (AISTATS) 2009,  2009,
-  Vol.~5, {\em JMLR: W&CP 5}.
+  Vol.~5.
 
-\bibitem[Andersen(2000)]{andersen2000simple}
-Andersen, L.B.G.
-\newblock A simple approach to the pricing of Bermudan swaptions in the
-  multi-factor LIBOR market model.
-\newblock {\em Journal of Computational Finance} {\bf 2000}, {\em 3},~5--32.
+\bibitem[Lagoudakis and Parr(2003)]{lagoudakis2003least}
+Lagoudakis, M.G.; Parr, R.
+\newblock Least-squares policy iteration.
+\newblock {\em The Journal of Machine Learning Research} {\bf 2003}, {\em
+  4},~1107--1149.
 
 \end{thebibliography}
